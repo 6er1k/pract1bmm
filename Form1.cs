@@ -3,6 +3,9 @@ using GMap.NET;
 using System.Runtime.Serialization;
 using GMap.NET.WindowsForms.Markers;
 using System.Windows.Forms;
+using System;
+using System.Data.SQLite;
+using System.DirectoryServices;
 
 namespace pract1bmm
 {
@@ -10,6 +13,9 @@ namespace pract1bmm
     {
         public GMapMarkerDirection planemarker;
         public GMapMarkerDirection radiomarker;
+        public GMapMarker temp;
+        private bool isLeftButtonDown = false;
+        private GMapOverlay objects = new GMapOverlay("objects");
         public Form1() => InitializeComponent();
 
         private void gMapControl1_Load_1(object sender, EventArgs e)
@@ -26,31 +32,37 @@ namespace pract1bmm
             gMapControl1.DragButton = MouseButtons.Left;
             gMapControl1.ShowCenter = false;
             gMapControl1.ShowTileGridLines = false;
-            GMapOverlay lay = new GMapOverlay("lay");
-            Bitmap planeimg = (Bitmap)Bitmap.FromFile("./arrow.png");
-            planemarker = new GMapMarkerDirection(new PointLatLng(55.97665, 37.43272), planeimg, 360);
-            lay.Markers.Add(planemarker);
 
-            gMapControl1.OnMapZoomChanged += new MapZoomChanged(mapControl_OnMapZoomChanged);
             gMapControl1.MouseClick += new MouseEventHandler(mapControl_MouseClick);
             gMapControl1.MouseDown += new MouseEventHandler(mapControl_MouseDown);
             gMapControl1.MouseUp += new MouseEventHandler(mapControl_MouseUp);
             gMapControl1.MouseMove += new MouseEventHandler(mapControl_MouseMove);
-
-            gMapControl1.OnMarkerClick += new MarkerClick(mapControl_OnMarkerClick);
             gMapControl1.OnMarkerEnter += new MarkerEnter(mapControl_OnMarkerEnter);
-            gMapControl1.OnMarkerLeave += new MarkerLeave(mapControl_OnMarkerLeave);
-            this.gMapControl1.Overlays.Add(lay);
+            this.gMapControl1.Overlays.Add(objects);
         }
         private void mapControl_MouseMove(object sender, MouseEventArgs e)
         {
             if (e.Button == System.Windows.Forms.MouseButtons.Left && isLeftButtonDown)
             {
-                if (planemarker != null)
+                if (planemarker != null || radiomarker != null)
                 {
-                    PointLatLng point = mapControl.FromLocalToLatLng(e.X, e.Y);
-                    currentMarker.Position = point;
-                    currentMarker.ToolTipText = string.Format("{0},{1}", point.Lat, point.Lng);
+                    if (temp != null) { 
+                        PointLatLng point = gMapControl1.FromLocalToLatLng(e.X, e.Y);
+                        temp.Position = point;
+                        temp.ToolTipText = string.Format("{0},{1}", point.Lat, point.Lng);
+                        switch (temp.Tag)
+                        {
+                            case 0:
+                                textBox1.Text = planemarker.Position.Lat.ToString();
+                                textBox2.Text = planemarker.Position.Lng.ToString();
+                                textBox3.Text = planemarker._ang.ToString();
+                                break;
+                            case 1:
+                                textBox5.Text = radiomarker.Position.Lat.ToString();
+                                textBox4.Text = radiomarker.Position.Lng.ToString();
+                                break;
+                        }
+                    }
                 }
             }
         }
@@ -60,6 +72,7 @@ namespace pract1bmm
             if (e.Button == System.Windows.Forms.MouseButtons.Left)
             {
                 isLeftButtonDown = false;
+                temp = null;
             }
         }
 
@@ -71,28 +84,44 @@ namespace pract1bmm
             }
         }
 
-        void mapControl_OnMarkerClick(GMapMarker item, MouseEventArgs e)
+        void mapControl_OnMarkerEnter(GMapMarker item)
         {
+            if (item is GMapMarkerDirection)
+            {
+                temp = item as GMapMarkerDirection;
+            }
         }
 
         void mapControl_MouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button == System.Windows.Forms.MouseButtons.Right)
             {
-                //objects.Markers.Clear();
-                PointLatLng point = gMapControl1.FromLocalToLatLng(e.X, e.Y);
-                //GMapMarker marker = new GMarkerGoogle(point, GMarkerGoogleType.green);
-                Bitmap bitmap = Bitmap.FromFile("F:\\Projects\\GMapDemo\\GMapDemo\\Image\\A.png") as Bitmap;
-                //GMapMarker marker = new GMarkerGoogle(point, bitmap);
-                GMapMarker marker = new GMapMarkerDirection(point, bitmap, 0);
-                marker.ToolTipMode = MarkerTooltipMode.OnMouseOver;
-                marker.ToolTipText = string.Format("{0},{1}", point.Lat, point.Lng);
-                objects.Markers.Add(marker);
+                if (planemarker == null)
+                {
+                    PointLatLng point = gMapControl1.FromLocalToLatLng(e.X, e.Y);
+                    Bitmap planeimg = (Bitmap)Bitmap.FromFile("./arrow.png");
+                    planemarker = new GMapMarkerDirection(point, planeimg, 0);
+                    planemarker.ToolTipMode = MarkerTooltipMode.OnMouseOver;
+                    planemarker.ToolTipText = string.Format("{0},{1}", point.Lat, point.Lng);
+                    planemarker.Tag = 0;
+                    textBox1.Text = planemarker.Position.Lat.ToString();
+                    textBox2.Text = planemarker.Position.Lng.ToString();
+                    textBox3.Text = planemarker._ang.ToString();
+                    objects.Markers.Add(planemarker);
+                }
+                else if (radiomarker == null)
+                {
+                    PointLatLng point = gMapControl1.FromLocalToLatLng(e.X, e.Y);
+                    Bitmap planeimg = (Bitmap)Bitmap.FromFile("./arrow.png");
+                    radiomarker = new GMapMarkerDirection(point, planeimg, 0);
+                    radiomarker.ToolTipMode = MarkerTooltipMode.OnMouseOver;
+                    radiomarker.ToolTipText = string.Format("{0},{1}", point.Lat, point.Lng);
+                    radiomarker.Tag = 1;
+                    textBox5.Text = radiomarker.Position.Lat.ToString();
+                    textBox4.Text = radiomarker.Position.Lng.ToString();
+                    objects.Markers.Add(radiomarker);
+                }
             }
-        }
-
-        void mapControl_OnMapZoomChanged()
-        {
         }
 
     }
