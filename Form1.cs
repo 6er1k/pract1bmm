@@ -6,14 +6,17 @@ using System.Windows.Forms;
 using System;
 using System.Data.SQLite;
 using System.DirectoryServices;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace pract1bmm
 {
     public partial class Form1 : Form
     {
-        public GMapMarkerDirection planemarker;
-        public GMapMarkerDirection radiomarker;
-        public GMapMarker temp;
+        private GMapMarkerDirection planemarker;
+        private GMapMarkerDirection radiomarker;
+        private Bitmap planeimg = (Bitmap)Bitmap.FromFile("./arrow.png");
+        private Bitmap radioimg = (Bitmap)Bitmap.FromFile("./arrow.png");
+        private GMapMarker temp;
         private bool isLeftButtonDown = false;
         private GMapOverlay objects = new GMapOverlay("objects");
         public Form1() => InitializeComponent();
@@ -32,7 +35,7 @@ namespace pract1bmm
             gMapControl1.DragButton = MouseButtons.Left;
             gMapControl1.ShowCenter = false;
             gMapControl1.ShowTileGridLines = false;
-
+            //add events
             gMapControl1.MouseClick += new MouseEventHandler(mapControl_MouseClick);
             gMapControl1.MouseDown += new MouseEventHandler(mapControl_MouseDown);
             gMapControl1.MouseUp += new MouseEventHandler(mapControl_MouseUp);
@@ -46,7 +49,8 @@ namespace pract1bmm
             {
                 if (planemarker != null || radiomarker != null)
                 {
-                    if (temp != null) { 
+                    if (temp != null)
+                    {
                         PointLatLng point = gMapControl1.FromLocalToLatLng(e.X, e.Y);
                         temp.Position = point;
                         temp.ToolTipText = string.Format("{0},{1}", point.Lat, point.Lng);
@@ -99,7 +103,6 @@ namespace pract1bmm
                 if (planemarker == null)
                 {
                     PointLatLng point = gMapControl1.FromLocalToLatLng(e.X, e.Y);
-                    Bitmap planeimg = (Bitmap)Bitmap.FromFile("./arrow.png");
                     planemarker = new GMapMarkerDirection(point, planeimg, 0);
                     planemarker.ToolTipMode = MarkerTooltipMode.OnMouseOver;
                     planemarker.ToolTipText = string.Format("{0},{1}", point.Lat, point.Lng);
@@ -112,8 +115,7 @@ namespace pract1bmm
                 else if (radiomarker == null)
                 {
                     PointLatLng point = gMapControl1.FromLocalToLatLng(e.X, e.Y);
-                    Bitmap planeimg = (Bitmap)Bitmap.FromFile("./arrow.png");
-                    radiomarker = new GMapMarkerDirection(point, planeimg, 0);
+                    radiomarker = new GMapMarkerDirection(point, radioimg, 0);
                     radiomarker.ToolTipMode = MarkerTooltipMode.OnMouseOver;
                     radiomarker.ToolTipText = string.Format("{0},{1}", point.Lat, point.Lng);
                     radiomarker.Tag = 1;
@@ -124,6 +126,157 @@ namespace pract1bmm
             }
         }
 
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            if (!textBox1.Focused) return;
+            double num1, num2;
+            float num3 = 0;
+            if (Double.TryParse(textBox1.Text, out num1))
+            {
+                if (Double.TryParse(textBox2.Text, out num2) && float.TryParse(textBox3.Text, out num3))
+                {
+                    PointLatLng point = new PointLatLng(num1, num2);
+                    if (planemarker == null)
+                    {
+                        planemarker = new GMapMarkerDirection(point, planeimg, (float)num3);
+                        planemarker.Tag = 0;
+                        objects.Markers.Add(planemarker);
+                    }
+                    else
+                    {
+                        planemarker.Position = point;
+                        planemarker._ang = (float)num3;
+                        Graphics g = Graphics.FromImage(planemarker.Image);
+                        planemarker.OnRender(g);
+                    }
+                }
+            }
+            else
+            {
+                textBox1.Text = "";
+                MessageBox.Show("Некорректный ввод!");
+            }
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+            if (!textBox2.Focused) return;
+            double num1, num2;
+            float num3 = 0;
+            if (Double.TryParse(textBox2.Text, out num2))
+            {
+                if (Double.TryParse(textBox1.Text, out num1) && float.TryParse(textBox3.Text, out num3))
+                {
+                    PointLatLng point = new PointLatLng(num1, num2);
+                    if (planemarker == null)
+                    {
+                        planemarker = new GMapMarkerDirection(point, planeimg, (float)num3);
+                        planemarker.Tag = 0;
+                        objects.Markers.Add(planemarker);
+                    }
+                    else
+                    {
+                        planemarker.Position = point;
+                        planemarker._ang = (float)num3;
+                        Graphics g = Graphics.FromImage(planemarker.Image);
+                        planemarker.OnRender(g);
+                    }
+                }
+            }
+            else
+            {
+                textBox2.Text = "";
+                MessageBox.Show("Некорректный ввод!");
+            }
+        }
+
+        private void textBox3_TextChanged(object sender, EventArgs e)
+        {
+            if (!textBox3.Focused) return;
+            double num1, num2;
+            float num3 = 0;
+            if (float.TryParse(textBox3.Text, out num3))
+            {
+                if (Double.TryParse(textBox1.Text, out num1) && Double.TryParse(textBox2.Text, out num2))
+                {
+                    PointLatLng point = new PointLatLng(num1, num2);
+                    if (planemarker == null)
+                    {
+                        planemarker = new GMapMarkerDirection(point, planeimg, (float)num3);
+                        planemarker.Tag = 0;
+                        objects.Markers.Add(planemarker);
+                    }
+                    else
+                    {
+                        planemarker.Position = point;
+                        planemarker._ang = (float)num3;
+                        Graphics g = Graphics.FromImage(planemarker.Image);
+                        planemarker.OnRender(g);
+                    }
+                }
+            }
+            else
+            {
+                textBox3.Text = "";
+                MessageBox.Show("Некорректный ввод!");
+            }
+        }
+
+        private void textBox5_TextChanged(object sender, EventArgs e)
+        {
+            if (!textBox5.Focused) return;
+            double num1, num2;
+            if (Double.TryParse(textBox5.Text, out num1))
+            {
+                if (Double.TryParse(textBox4.Text, out num2))
+                {
+                    PointLatLng point = new PointLatLng(num1, num2);
+                    if (radiomarker == null)
+                    {
+                        radiomarker = new GMapMarkerDirection(point, radioimg, 0);
+                        radiomarker.Tag = 1;
+                        objects.Markers.Add(radiomarker);
+                    }
+                    else
+                    {
+                        radiomarker.Position = point;
+                    }
+                }
+            }
+            else
+            {
+                textBox5.Text = "";
+                MessageBox.Show("Некорректный ввод!");
+            }
+        }
+
+        private void textBox4_TextChanged(object sender, EventArgs e)
+        {
+            if (!textBox4.Focused) return;
+            double num1, num2;
+            if (Double.TryParse(textBox4.Text, out num2))
+            {
+                if (Double.TryParse(textBox5.Text, out num1))
+                {
+                    PointLatLng point = new PointLatLng(num1, num2);
+                    if (radiomarker == null)
+                    {
+                        radiomarker = new GMapMarkerDirection(point, radioimg, 0);
+                        radiomarker.Tag = 1;
+                        objects.Markers.Add(radiomarker);
+                    }
+                    else
+                    {
+                        radiomarker.Position = point;
+                    }
+                }
+            }
+            else
+            {
+                textBox5.Text = "";
+                MessageBox.Show("Некорректный ввод!");
+            }
+        }
     }
     [Serializable]
     public class GMapMarkerDirection : GMapMarker, ISerializable

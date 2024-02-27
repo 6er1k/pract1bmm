@@ -81,6 +81,7 @@
             textBox1.Name = "textBox1";
             textBox1.Size = new Size(100, 23);
             textBox1.TabIndex = 1;
+            textBox1.TextChanged += textBox1_TextChanged;
             // 
             // label1
             // 
@@ -125,6 +126,7 @@
             textBox2.Name = "textBox2";
             textBox2.Size = new Size(100, 23);
             textBox2.TabIndex = 5;
+            textBox2.TextChanged += textBox2_TextChanged;
             // 
             // textBox3
             // 
@@ -133,6 +135,7 @@
             textBox3.Name = "textBox3";
             textBox3.Size = new Size(100, 23);
             textBox3.TabIndex = 7;
+            textBox3.TextChanged += textBox3_TextChanged;
             // 
             // label5
             // 
@@ -159,6 +162,7 @@
             textBox4.Name = "textBox4";
             textBox4.Size = new Size(100, 23);
             textBox4.TabIndex = 11;
+            textBox4.TextChanged += textBox4_TextChanged;
             // 
             // label7
             // 
@@ -176,6 +180,7 @@
             textBox5.Name = "textBox5";
             textBox5.Size = new Size(100, 23);
             textBox5.TabIndex = 9;
+            textBox5.TextChanged += textBox5_TextChanged;
             // 
             // label8
             // 
