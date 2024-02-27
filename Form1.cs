@@ -19,6 +19,9 @@ namespace pract1bmm
         private GMapMarker temp;
         private bool isLeftButtonDown = false;
         private GMapOverlay objects = new GMapOverlay("objects");
+        private static readonly double Deg2Rad = 0.01745329251994329576923690768489;
+        private static readonly double Rad2Deg = 57.295779513082320876798154814105;
+
         public Form1() => InitializeComponent();
 
         private void gMapControl1_Load_1(object sender, EventArgs e)
@@ -66,6 +69,7 @@ namespace pract1bmm
                                 textBox4.Text = radiomarker.Position.Lng.ToString();
                                 break;
                         }
+                        Result();
                     }
                 }
             }
@@ -95,7 +99,36 @@ namespace pract1bmm
                 temp = item as GMapMarkerDirection;
             }
         }
+        public static double GetPeleng(double lat1, double lon1, double lat2, double lon2)
+        {
+            var destinationRadian = Deg2Rad * (lon2 - lon1);
+            var destinationPhi = Math.Log(Math.Tan(Deg2Rad * lat2 / 2 + Math.PI / 4) / Math.Tan((Deg2Rad * lat1) / 2 + Math.PI / 4));
 
+            if (Math.Abs(destinationRadian) > Math.PI)
+                destinationRadian = destinationRadian > 0
+                                        ? -(2 * Math.PI - destinationRadian)
+                                        : (2 * Math.PI + destinationRadian);
+
+            return ((Rad2Deg * Math.Atan2(destinationRadian, destinationPhi)) + 360) % 360;
+        }
+        private void Result()
+        {
+            if (planemarker == null || radiomarker == null)
+            {
+                label11.Text = "Курсовой угол радиостанции:";
+                label10.Text = "Пеленг (азимут) радиостанции:";
+                label9.Text = "Пеленг (азимут) самолета:";
+            }
+            else
+            {;
+                
+                var cur = GetPeleng(planemarker.Position.Lat, planemarker.Position.Lng, radiomarker.Position.Lat, radiomarker.Position.Lng) - planemarker._ang;
+                if (cur < 0) cur = cur + 360;
+                label11.Text = "Курсовой угол радиостанции:" + cur;
+                label10.Text = "Пеленг (азимут) радиостанции: " + GetPeleng(planemarker.Position.Lat, planemarker.Position.Lng, radiomarker.Position.Lat, radiomarker.Position.Lng);
+                label9.Text = "Пеленг (азимут) самолета:" + GetPeleng(radiomarker.Position.Lat, radiomarker.Position.Lng, planemarker.Position.Lat, planemarker.Position.Lng);
+            }
+        }
         void mapControl_MouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button == System.Windows.Forms.MouseButtons.Right)
@@ -111,18 +144,19 @@ namespace pract1bmm
                     textBox2.Text = planemarker.Position.Lng.ToString();
                     textBox3.Text = planemarker._ang.ToString();
                     objects.Markers.Add(planemarker);
+                    Result();
                 }
                 else if (radiomarker == null)
                 {
                     PointLatLng point = gMapControl1.FromLocalToLatLng(e.X, e.Y);
-                    radiomarker = new GMapMarkerDirection(point, radioimg, 347);
+                    radiomarker = new GMapMarkerDirection(point, radioimg, 0);
                     radiomarker.ToolTipMode = MarkerTooltipMode.OnMouseOver;
                     radiomarker.ToolTipText = string.Format("{0},{1}", point.Lat, point.Lng);
                     radiomarker.Tag = 1;
                     textBox5.Text = radiomarker.Position.Lat.ToString();
                     textBox4.Text = radiomarker.Position.Lng.ToString();
                     objects.Markers.Add(radiomarker);
-
+                    Result();
                 }
             }
         }
@@ -151,6 +185,7 @@ namespace pract1bmm
                         planemarker.OnRender(g);
                     }
                 }
+                Result();
             }
             else
             {
@@ -183,6 +218,7 @@ namespace pract1bmm
                         planemarker.OnRender(g);
                     }
                 }
+                Result();
             }
             else
             {
@@ -215,6 +251,7 @@ namespace pract1bmm
                         planemarker.OnRender(g);
                     }
                 }
+                Result();
             }
             else
             {
@@ -243,6 +280,7 @@ namespace pract1bmm
                         radiomarker.Position = point;
                     }
                 }
+                Result();
             }
             else
             {
@@ -271,6 +309,7 @@ namespace pract1bmm
                         radiomarker.Position = point;
                     }
                 }
+                Result();
             }
             else
             {
@@ -332,7 +371,7 @@ namespace pract1bmm
             double oldHeight = (double)image.Height;
 
             // Convert degrees to radians
-            double theta = ((double)angle - 347) * Math.PI / 180.0;
+            double theta = ((double)angle) * Math.PI / 180.0;
             double locked_theta = theta;
 
             // Ensure theta is now [0, 2pi)

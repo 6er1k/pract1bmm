@@ -241,7 +241,7 @@
             Controls.Add(textBox1);
             Controls.Add(gMapControl1);
             Name = "Form1";
-            Text = "Form1";
+            Text = "pract1bmm";
             ResumeLayout(false);
             PerformLayout();
         }
