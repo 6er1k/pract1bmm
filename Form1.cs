@@ -15,7 +15,7 @@ namespace pract1bmm
         private GMapMarkerDirection planemarker;
         private GMapMarkerDirection radiomarker;
         private Bitmap planeimg = (Bitmap)Bitmap.FromFile("./arrow.png");
-        private Bitmap radioimg = (Bitmap)Bitmap.FromFile("./arrow.png");
+        private Bitmap radioimg = (Bitmap)Bitmap.FromFile("./radio.png");
         private GMapMarker temp;
         private bool isLeftButtonDown = false;
         private GMapOverlay objects = new GMapOverlay("objects");
@@ -115,13 +115,14 @@ namespace pract1bmm
                 else if (radiomarker == null)
                 {
                     PointLatLng point = gMapControl1.FromLocalToLatLng(e.X, e.Y);
-                    radiomarker = new GMapMarkerDirection(point, radioimg, 0);
+                    radiomarker = new GMapMarkerDirection(point, radioimg, 347);
                     radiomarker.ToolTipMode = MarkerTooltipMode.OnMouseOver;
                     radiomarker.ToolTipText = string.Format("{0},{1}", point.Lat, point.Lng);
                     radiomarker.Tag = 1;
                     textBox5.Text = radiomarker.Position.Lat.ToString();
                     textBox4.Text = radiomarker.Position.Lng.ToString();
                     objects.Markers.Add(radiomarker);
+
                 }
             }
         }
@@ -233,7 +234,7 @@ namespace pract1bmm
                     PointLatLng point = new PointLatLng(num1, num2);
                     if (radiomarker == null)
                     {
-                        radiomarker = new GMapMarkerDirection(point, radioimg, 0);
+                        radiomarker = new GMapMarkerDirection(point, radioimg, 347);
                         radiomarker.Tag = 1;
                         objects.Markers.Add(radiomarker);
                     }
@@ -261,7 +262,7 @@ namespace pract1bmm
                     PointLatLng point = new PointLatLng(num1, num2);
                     if (radiomarker == null)
                     {
-                        radiomarker = new GMapMarkerDirection(point, radioimg, 0);
+                        radiomarker = new GMapMarkerDirection(point, radioimg, 347);
                         radiomarker.Tag = 1;
                         objects.Markers.Add(radiomarker);
                     }
@@ -331,7 +332,7 @@ namespace pract1bmm
             double oldHeight = (double)image.Height;
 
             // Convert degrees to radians
-            double theta = ((double)angle - 77) * Math.PI / 180.0;
+            double theta = ((double)angle - 347) * Math.PI / 180.0;
             double locked_theta = theta;
 
             // Ensure theta is now [0, 2pi)
